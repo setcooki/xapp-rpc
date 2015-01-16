@@ -13,13 +13,16 @@
     },
     "require": {
         "php": ">=5.2.6",
-        "xapp/Core": "1.0.x-dev"
+        "xapp-Core": "master"
     },
-    "repositories": [{
-        "packagist": false,
-        "type": "composer",
-        "url": "http://www.xapp-php.com/packages/packages.json"
-    }],
+    "repositories": [
+        {
+            "url": "https://github.com/setcooki/xapp-core",
+            "type": "vcs",
+            "version":"master",
+            "packagist": false
+        }
+    ],
     "autoload": {
         "psr-0": {
             "Xapp_Rpc": "../.."
