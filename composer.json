@@ -1,5 +1,5 @@
 {
-    "name": "xapp-rpc",
+    "name": "xapp/rpc",
     "type": "xapp-module",
     "keywords": ["xapp", "rpc"],
     "homepage": "http://xapp-php.com",
