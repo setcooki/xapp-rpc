@@ -10,7 +10,7 @@ defined('XAPP') || require_once(dirname(__FILE__) . '/../Core/core.php');
  * @error 143
  * @author Frank Mueller <set@cooki.me>
  */
-class Xapp_Rpc_Fault extends ErrorException
+class Xapp_Rpc_Fault extends Xapp_Exception
 {
     /**
      * contains the rpc fault code
