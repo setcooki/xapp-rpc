@@ -1,6 +1,6 @@
 <?php
 
-defined('XAPP') || require_once(dirname(__FILE__) . '/../../../Core/core.php');
+defined('XAPP') || require_once(dirname(__FILE__) . '/../../../../core/core.php');
 
 class Xapp_Rpc_Smd_Exception extends Xapp_Rpc_Exception
 {
