@@ -269,6 +269,7 @@ class Xapp_Rpc_Server_Jsonp extends Xapp_Rpc_Server_Json
      *
      * @error 14706
      * @param array $call
+     * @return mixed
      * @throws Exception|mixed|string
      */
     protected function execute($call)
@@ -287,6 +288,7 @@ class Xapp_Rpc_Server_Jsonp extends Xapp_Rpc_Server_Json
                 $result = $response->encode($result);
             }
             $response->body($result);
+            return $result;
         }
         catch(Exception $e)
         {
@@ -317,6 +319,19 @@ class Xapp_Rpc_Server_Jsonp extends Xapp_Rpc_Server_Json
             }
             throw $e;
         }
+    }
+
+
+    /**
+     * response mapping is not supported for jsonp
+     *
+     * @error 14709
+     * @param null|mixed $map expects mapping string/file
+     * @return void
+     */
+    public function map($map = null)
+    {
+
     }
 
 

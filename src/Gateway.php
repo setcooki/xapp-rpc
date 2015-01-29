@@ -175,6 +175,15 @@ class Xapp_Rpc_Gateway implements Xapp_Singleton_Interface
      */
     const SIGNED_REQUEST_CALLBACK       = 'RPC_GATEWAY_SIGNED_REQUEST_CALLBACK';
 
+    /**
+     * set parameter name for response mapping which defaults to "map". if the custom parameter is found in request the
+     * value will be passed to server instance to for response mapping. NOTE: server instance must have a valide mapper
+     * class registered for mapping to work
+     *
+     * @const RESPONSE_MAPPER_MAP_PARAM
+     */
+    const RESPONSE_MAPPER_MAP_PARAM     = 'RPC_GATEWAY_RESPONSE_MAPPER_MAP_PARAM';
+
 
     /**
      * contains singleton instance for this class
@@ -229,7 +238,8 @@ class Xapp_Rpc_Gateway implements Xapp_Singleton_Interface
         self::SIGNED_REQUEST_EXCLUDES       => XAPP_TYPE_ARRAY,
         self::SIGNED_REQUEST_USER_PARAM     => XAPP_TYPE_STRING,
         self::SIGNED_REQUEST_SIGN_PARAM     => XAPP_TYPE_STRING,
-        self::SIGNED_REQUEST_CALLBACK       => XAPP_TYPE_CALLABLE
+        self::SIGNED_REQUEST_CALLBACK       => XAPP_TYPE_CALLABLE,
+        self::RESPONSE_MAPPER_MAP_PARAM     => XAPP_TYPE_STRING
     );
 
     /**
@@ -256,7 +266,8 @@ class Xapp_Rpc_Gateway implements Xapp_Singleton_Interface
         self::SIGNED_REQUEST_EXCLUDES       => 0,
         self::SIGNED_REQUEST_USER_PARAM     => 1,
         self::SIGNED_REQUEST_SIGN_PARAM     => 1,
-        self::SIGNED_REQUEST_CALLBACK       => 0
+        self::SIGNED_REQUEST_CALLBACK       => 0,
+        self::RESPONSE_MAPPER_MAP_PARAM     => 1
     );
 
     /**
@@ -269,7 +280,8 @@ class Xapp_Rpc_Gateway implements Xapp_Singleton_Interface
         self::OMIT_ERROR                    => false,
         self::SIGNED_REQUEST_METHOD         => 'host',
         self::SIGNED_REQUEST_USER_PARAM     => 'usr',
-        self::SIGNED_REQUEST_SIGN_PARAM     => 'sig'
+        self::SIGNED_REQUEST_SIGN_PARAM     => 'sig',
+        self::RESPONSE_MAPPER_MAP_PARAM     => 'map'
     );
 
 
@@ -814,6 +826,16 @@ class Xapp_Rpc_Gateway implements Xapp_Singleton_Interface
                         }
                     }
                 }
+                break;
+            case self::RESPONSE_MAPPER_MAP_PARAM:
+                    $map = $this->request()->getParam(xapp_get_option(self::RESPONSE_MAPPER_MAP_PARAM, $this), null);
+                    if(!empty($map))
+                    {
+                        if(xapp_is_option(Xapp_Rpc_Server::MAPPER, $this->server()))
+                        {
+                            $this->server()->map($map);
+                        }
+                    }
                 break;
             default:
         }

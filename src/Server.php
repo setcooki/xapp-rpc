@@ -4,6 +4,7 @@ defined('XAPP') || require_once(dirname(__FILE__) . '/../../core/core.php');
 
 xapp_import('xapp.Rpc');
 xapp_import('xapp.Rpc.Smd');
+xapp_import('xapp.Rpc.Mapper');
 xapp_import('xapp.Rpc.Server.Exception');
 xapp_import('xapp.Rpc.Request');
 xapp_import('xapp.Rpc.Response');
@@ -255,6 +256,46 @@ abstract class Xapp_Rpc_Server extends Xapp_Rpc implements Xapp_Singleton_Interf
      */
     const VALIDATION                    = 'RPC_SERVER_VALIDATION';
 
+    /**
+     * this option will allow parameter mapping/piping for batched requests and response mapping for rpc call results. the
+     * option is expected to be either instance of Xapp_Rpc_Mapper or boolean true to auto create mapper instance. once
+     * mapper is configured and passed to server instance will do the following:
+     * 1) remap parameter or pipe data from one rpc call response to another rpc call request parameter, consider the
+     * following batched request:
+     * <code>
+     * {[
+     *  "jsonrpc": "2.0",
+     *  "method": "Foo.getAll", //return array of items under $items parameter
+     *  "params": null,
+     *  "id": 1
+     * ],[
+     *  "jsonrpc": "2.0",
+     *  "method": "Foo.getOne",
+     *  "params": {"id": "${0:/items/0/id}"},
+     *  "id": 1
+     * ]}
+     * </code>
+     * the second request parameter $id is mapped from first requests response data at ident/ns 0:
+     *
+     * 2) the second use to enable rpc response mapping. passing a mapping file/string will return the mapped map instead
+     * of the original rpc response e.g. consider the following request with custom parameter $map which is supported only
+     * by Xapp_Rpc_Gateway class:
+     * <code>
+     * {
+     *  "map": {
+     *   "from0" => "${0:/items/1/id}",
+     *   "from1" => "${1:/data/id}"
+     * }}
+     * </code>
+     * the mapping object will be returned in rpc response $result parameter instead the original response data from rpc
+     * call. NOTE: this mapping option is supposed to work only with Xapp_Rpc_Gateway. to use response mapping only with
+     * server instance pass the mapping string/file to Xapp_Rpc_Server::map($map). the actual map value can be a custom
+     * mapping string or a string ident/ns which refers to a registered json file - see Xapp_Rpc_Mapper
+     *
+     * @const MAPPER
+     */
+    const MAPPER                        = 'RPC_SERVER_MAPPER';
+
 
     /**
      * options dictionary for this class containing all data type values
@@ -284,7 +325,8 @@ abstract class Xapp_Rpc_Server extends Xapp_Rpc implements Xapp_Singleton_Interf
         self::EXCEPTION_CALLBACK        => array(XAPP_TYPE_NULL, XAPP_TYPE_CALLABLE),
         self::COMPLY_TO_JSONRPC_1_2     => XAPP_TYPE_BOOL,
         self::ALLOW_BATCHED_REQUESTS    => XAPP_TYPE_BOOL,
-        self::VALIDATION                => array(XAPP_TYPE_BOOL, XAPP_TYPE_CALLABLE)
+        self::VALIDATION                => array(XAPP_TYPE_BOOL, XAPP_TYPE_CALLABLE),
+        self::MAPPER                    => array(XAPP_TYPE_NULL, XAPP_TYPE_BOOL, 'Xapp_Rpc_Mapper')
     );
 
     /**
@@ -315,7 +357,8 @@ abstract class Xapp_Rpc_Server extends Xapp_Rpc implements Xapp_Singleton_Interf
         self::EXCEPTION_CALLBACK        => 0,
         self::COMPLY_TO_JSONRPC_1_2     => 1,
         self::ALLOW_BATCHED_REQUESTS    => 1,
-        self::VALIDATION                => 0
+        self::VALIDATION                => 0,
+        self::MAPPER                    => 0
     );
 
     /**
@@ -365,6 +408,14 @@ abstract class Xapp_Rpc_Server extends Xapp_Rpc implements Xapp_Singleton_Interf
      */
     protected $_class = null;
 
+    /**
+     * contains a mapping file or string that gets passed automatically via rpc gateway when using response mapping or
+     * can be set manually for server instance. the map will be resolved before flush mapping rpc call results to map
+     *
+     * @var null|mixed
+     */
+    protected $_map = null;
+
 
     /**
      * init server
@@ -402,6 +453,14 @@ abstract class Xapp_Rpc_Server extends Xapp_Rpc implements Xapp_Singleton_Interf
      * @return mixed
      */
     abstract public function error(Exception $error);
+
+    /**
+     * map rpc call result
+     *
+     * @param null|mixed $map
+     * @return void
+     */
+    abstract public function map($map = null);
 
 
     /**
@@ -613,7 +672,7 @@ abstract class Xapp_Rpc_Server extends Xapp_Rpc implements Xapp_Singleton_Interf
      * in class constructors
      *
      * @error 14205
-     * @param Xapp_Rpc_Smd $smd expects smd instance when to set instance
+     * @param null|Xapp_Rpc_Smd $smd expects smd instance when to set instance
      * @return null|Xapp_Rpc_Smd
      */
     public function smd(Xapp_Rpc_Smd $smd = null)
@@ -623,6 +682,24 @@ abstract class Xapp_Rpc_Server extends Xapp_Rpc implements Xapp_Singleton_Interf
             xapp_set_option(self::SMD, $smd, $this);
         }
         return xapp_get_option(self::SMD, $this);
+    }
+
+
+    /**
+     * setter/getter for mapper instance. if mapper instance is not set via class options instance can be passed via this
+     * method at a later stage. you must make sure the mapper instance has all required options set
+     *
+     * @error 14227
+     * @param null|Xapp_Rpc_Mapper $mapper expects instance when to set instance
+     * @return null|Xapp_Rpc_Mapper
+     */
+    public function mapper(Xapp_Rpc_Mapper $mapper = null)
+    {
+        if($mapper !== null)
+        {
+            xapp_set_option(self::MAPPER, $mapper, $this);
+        }
+        return xapp_get_option(self::MAPPER, $this);
     }
 
 
@@ -1076,9 +1153,10 @@ abstract class Xapp_Rpc_Server extends Xapp_Rpc implements Xapp_Singleton_Interf
 
 
     /**
-     * handles the request, executes service and flushes result to output stream.
-     * nothing will happen unless this function is called! if the server was called
-     * with GET and not GET parameters are set will flush smd directly
+     * handles the request, executes service and flushes result to output stream. nothing will happen unless this function
+     * is called! if the server was called with GET and not GET parameters are set will flush smd directly. if server is
+     * instantiated with mapper instance will apply rpc call parameter piping and response mapping - see Xapp_Rpc_Server::_map
+     * property for more info
      *
      * @error 14213
      * @return void
@@ -1089,6 +1167,8 @@ abstract class Xapp_Rpc_Server extends Xapp_Rpc implements Xapp_Singleton_Interf
         xapp_debug('rpc server handler started', 'rpc');
         xapp_event('xapp.rpc.server.handle', array(&$this));
 
+        $mapper = $this->mapper();
+
         if($this->request()->isGet() && !$this->request()->hasParam())
         {
             $this->response()->body($this->smd()->compile());
@@ -1096,10 +1176,31 @@ abstract class Xapp_Rpc_Server extends Xapp_Rpc implements Xapp_Singleton_Interf
         }else{
             if($this->hasCalls())
             {
-                foreach($this->_calls as $call)
+                foreach($this->_calls as $key => $call)
                 {
-                    $this->execute($call);
+                    if($mapper)
+                    {
+                        if(array_key_exists(3, $call) && array_key_exists('params', $call[3]) && !empty($call[3]['params']))
+                        {
+                            try
+                            {
+                                if(($result = $mapper->map($call[3]['params'], false, false)) !== false)
+                                {
+                                    $call[3]['params'] = $result;
+                                }
+                            }
+                            catch(Xapp_Result_Exception $e){}
+                        }
+                        $result = $this->execute($call);
+                        if(array_key_exists('result', $result))
+                        {
+                            $mapper->add($result['result'], $key);
+                        }
+                    }else{
+                        $this->execute($call);
+                    }
                 }
+                $this->map();
                 $this->flush();
             }else{
                 Xapp_Rpc_Fault::t("request is empty or does not contain any rpc action", array(1421301, -32600), XAPP_ERROR_IGNORE);

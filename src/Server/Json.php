@@ -125,7 +125,7 @@ class Xapp_Rpc_Server_Json extends Xapp_Rpc_Server
 
 
     /**
-     * class constructor will set missing instances of smd, request and response and
+     * class constructor will set missing instances of smd, mapper, request and response and
      * call parent constructor for class initialization
      *
      * @error 14601
@@ -137,6 +137,10 @@ class Xapp_Rpc_Server_Json extends Xapp_Rpc_Server
         if(!xapp_is_option(self::SMD, $this))
         {
             xapp_set_option(self::SMD, Xapp_Rpc_Smd_Json::instance(), $this);
+        }
+        if(xapp_is_option(self::MAPPER, $this) && xapp_get_option(self::MAPPER, $this) === true)
+        {
+            xapp_set_option(self::MAPPER, new Xapp_Rpc_Mapper(), $this);
         }
         if(!xapp_is_option(self::REQUEST, $this))
         {
@@ -363,7 +367,7 @@ class Xapp_Rpc_Server_Json extends Xapp_Rpc_Server
      *
      * @error 14605
      * @param array $call expects the call to execute
-     * @return void
+     * @return mixed
      * @throws Exception
      */
     protected function execute($call)
@@ -415,7 +419,55 @@ class Xapp_Rpc_Server_Json extends Xapp_Rpc_Server
             $data['id'] = $call[3]['id'];
         }
         $this->_data[] = $data;
-        $data = null;
+        return $data;
+    }
+
+
+    /**
+     * the map method is called just before flush in server handler and will return a response map if present instead of
+     * the result of rpc call response. the $map argument must be a decoded or encoded json string or a json file which
+     * is supposed to be passed by Xapp_Rpc_Gateway class which will look for custom $map parameter in request - see
+     * Xapp_Rpc_Server::$_map property for more info.
+     *
+     * @error 14610
+     * @see Xapp_Rpc_Server::$_map
+     * @param null|mixed $map expects mapping string/file
+     * @return void
+     */
+    public function map($map = null)
+    {
+        $mapper = xapp_get_option(self::MAPPER, $this, null);
+
+        try
+        {
+            if($mapper)
+            {
+                if(!is_null($map))
+                {
+                    $this->_map = $map;
+                }else{
+                    if($this->_map !== null)
+                    {
+                        if(
+                            is_string($this->_map)
+                            &&
+                            !$mapper->hasPlaceholder($this->_map)
+                            &&
+                            !$mapper->isRegisteredMap($this->_map)
+                        ){
+                            return;
+                        }
+                        if(($result = $mapper->map($this->_map, false, true)) !== false)
+                        {
+                            $this->_data[0]['result'] = $result;
+                            $this->_data = array($this->_data[0]);
+                            unset($result);
+                        }
+                    }
+                }
+            }
+        }
+        catch(Xapp_Result_Exception $e){}
     }
 
 
@@ -459,9 +511,9 @@ class Xapp_Rpc_Server_Json extends Xapp_Rpc_Server
     {
         if(sizeof($this->_data) === 1)
         {
-            if(array_key_exists('error', current($this->_data)) || array_key_exists('id', current($this->_data)))
+            if(array_key_exists('error', $this->_data[0]) || array_key_exists('id', $this->_data[0]))
             {
-                $this->response()->data(current($this->_data));
+                $this->response()->data($this->_data[0]);
             }
         }else{
             foreach($this->_data as $k => $v)
