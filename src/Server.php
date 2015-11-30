@@ -933,12 +933,12 @@ abstract class Xapp_Rpc_Server extends Xapp_Rpc implements Xapp_Singleton_Interf
                     {
                         if(strpos($call[2], NAMESPACE_SEPARATOR) !== false)
                         {
-                            $call[2] = NAMESPACE_SEPARATOR . str_replace(array('\\', '/', '_', '.'), xapp_get_option(self::NAMESPACE_IDENTIFIER, $this), trim($call[2], ' ' . NAMESPACE_SEPARATOR));
+                            $call[2] = NAMESPACE_SEPARATOR . str_replace(array('\\\\', '\\', '/', '_', '.'), xapp_get_option(self::NAMESPACE_IDENTIFIER, $this), trim($call[2], ' ' . NAMESPACE_SEPARATOR));
                         }else{
                             $call[2] = str_replace(array('/', '_', '.'), xapp_get_option(self::NAMESPACE_IDENTIFIER, $this), trim($call[2]));
                         }
                     }else{
-                        $call[2] = str_replace(array('\\', '/', '_', '.'), xapp_get_option(self::NAMESPACE_IDENTIFIER, $this), trim($call[2]));
+                        $call[2] = str_replace(array('\\\\', '\\', '/', '_', '.'), xapp_get_option(self::NAMESPACE_IDENTIFIER, $this), trim($call[2]));
                     }
                     $key = "{$call[2]}.{$call[1]}";
                     try
