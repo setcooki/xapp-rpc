@@ -701,9 +701,9 @@ abstract class Xapp_Rpc_Request
             {
                 return $ip;
             }
-            if(!empty($HTTP_SERVER_VARS) && !empty($HTTP_SERVER_VARS['SERVER_ADDR']))
+            if(!empty($_SERVER) && !empty($_SERVER['SERVER_ADDR']))
             {
-                return $HTTP_SERVER_VARS['SERVER_ADDR'];
+                return $_SERVER['SERVER_ADDR'];
             }
             $ip = gethostbyname($_SERVER['SERVER_NAME']);
             if((bool)filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) !== false)

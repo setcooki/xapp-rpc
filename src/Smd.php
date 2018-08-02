@@ -941,7 +941,12 @@ abstract class Xapp_Rpc_Smd implements Xapp_Singleton_Interface
                 $_url = trim($_url, '/ ');
                 if(($_url = parse_url($_url)) !== false)
                 {
-                    $path = trim(preg_replace(array('/\{(?:\$|\%)([^\}]+)\}/ie', '/\/+/'), array("\$$1", '/'), $_url['path']), '/ ');
+                    $path = preg_replace_callback('/\{(?:\$|\%)([^\}]+)\}/i', function($m)
+                    {
+                        return sprintf("$%s", $m[1]);
+                    }, $_url['path']);
+                    $path = preg_replace('/\/+/', '/', $path);
+                    $path = trim($path);
                 }else{
                     throw new Xapp_Rpc_Smd_Exception(xapp_sprintf(_("smd rewrite rule: %s is not a valid url or url path value"), $_url), 1411301);
                 }
