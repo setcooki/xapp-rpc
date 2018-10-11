@@ -54,7 +54,7 @@ abstract class Xapp_Rpc_Smd implements Xapp_Singleton_Interface
     /**
      * defines whether to include parent class methods in rpc service when service
      * is extended from another class
-     * 
+     *
      * @const IGNORE_PARENTS
      */
     const IGNORE_PARENTS            = 'RPC_IGNORE_PARENTS';
@@ -662,13 +662,22 @@ abstract class Xapp_Rpc_Smd implements Xapp_Singleton_Interface
                         $line = substr($line, strpos($line, '@'));
                         $line = preg_replace(array('/[ \s]+/', '/[ \s]\|[ \s]/'), array(' ', '|'), $line);
                         $word = preg_split('/\s+/i', $line);
-                        $word = strtolower($word[1]);
-                        if(stripos($word, '|') !== false)
+                        if(sizeof($word) > 1)
                         {
-                            $word = explode('|', $word);
+                            $word = strtolower($word[1]);
+                            if(stripos($word, '|') !== false)
+                            {
+                                $word = explode('|', $word);
+                            }
+                        }else{
+                            $word = '';
                         }
                         if(stripos($line, '@param') !== false)
                         {
+                            if(empty($word))
+                            {
+                                $word = '$mixed';
+                            }
                             if(preg_match('/\$\w+\b(.*)$/isD', $line, $m))
                             {
                                 $obj->params['description'][] = trim($m[1]);
@@ -684,6 +693,10 @@ abstract class Xapp_Rpc_Smd implements Xapp_Singleton_Interface
                         }
                         if(stripos($line, '@return') !== false)
                         {
+                            if(empty($word))
+                            {
+                                $word = null;
+                            }
                             $obj->returns = self::mapType($word);
                         }
                     }
