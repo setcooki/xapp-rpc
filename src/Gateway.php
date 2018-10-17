@@ -553,7 +553,7 @@ class Xapp_Rpc_Gateway implements Xapp_Singleton_Interface
         }
         if(!in_array($algo, hash_algos()))
         {
-            throw new Xapp_Rpc_Gateway_Exception(_("passed hashing algorithm is not recognized"), 1401301);
+            throw new Xapp_Rpc_Gateway_Exception(__("passed hashing algorithm is not recognized"), 1401301);
         }
         if(!function_exists('xapp_rpc_sign'))
         {
@@ -599,7 +599,7 @@ class Xapp_Rpc_Gateway implements Xapp_Singleton_Interface
         {
             if(($conf = file_get_contents($conf)) === false)
             {
-                throw new Xapp_Rpc_Gateway_Exception(_("unable to open rpc conf file"), 1401401);
+                throw new Xapp_Rpc_Gateway_Exception(__("unable to open rpc conf file"), 1401401);
             }
         }
         $conf = trim($conf, "\r\n");
@@ -791,7 +791,7 @@ class Xapp_Rpc_Gateway implements Xapp_Singleton_Interface
                                 $user = $this->request()->getParam(xapp_get_option(self::SIGNED_REQUEST_USER_PARAM, $this), false);
                                 break;
                             default:
-                                throw new Xapp_Rpc_Gateway_Exception(_("unsupported signed request user identification method"), 1401514);
+                                throw new Xapp_Rpc_Gateway_Exception(__("unsupported signed request user identification method"), 1401514);
                         }
                         if($user === false || $user === null)
                         {
@@ -821,7 +821,7 @@ class Xapp_Rpc_Gateway implements Xapp_Singleton_Interface
                                     Xapp_Rpc_Fault::t("verifying signed request failed", array(1401510, -32010));
                                 }
                             }else{
-                                throw new Xapp_Rpc_Gateway_Exception(_("user identification key must be set when using internal signed request verification"), 1401511);
+                                throw new Xapp_Rpc_Gateway_Exception(__("user identification key must be set when using internal signed request verification"), 1401511);
                             }
                         }
                     }

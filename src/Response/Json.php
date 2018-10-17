@@ -113,7 +113,7 @@ class Xapp_Rpc_Response_Json extends Xapp_Rpc_Response
                 }
             }
         }else{
-            throw new Xapp_Rpc_Response_Exception(_("php function json_decode is not supported by system"), 1510201);
+            throw new Xapp_Rpc_Response_Exception(__("php function json_decode is not supported by system"), 1510201);
         }
     }
 

@@ -143,7 +143,7 @@ abstract class Xapp_Rpc_Request
         {
            return new $class($options);
         }else{
-            throw new Xapp_Rpc_Request_Exception(xapp_sprintf(_("rpc request class: %s not found"), $class), 1440201);
+            throw new Xapp_Rpc_Request_Exception(xapp_sprintf(__("rpc request class: %s not found"), $class), 1440201);
         }
     }
 
@@ -327,7 +327,7 @@ abstract class Xapp_Rpc_Request
                 $return = ((array_key_exists($name, $_SERVER)) ? $_SERVER[$name] : xapp_default($default));
                 break;
             default:
-                throw new Xapp_Rpc_Request_Exception(xapp_sprintf(_("request variable scope: %s does not exist"), $from), 1441001);
+                throw new Xapp_Rpc_Request_Exception(xapp_sprintf(__("request variable scope: %s does not exist"), $from), 1441001);
         }
         return $return;
     }
@@ -486,7 +486,7 @@ abstract class Xapp_Rpc_Request
                 $_COOKIE[$name] = $value;
                 break;
             default:
-                throw new Xapp_Rpc_Request_Exception(xapp_sprintf(_("request variable scope: %s does not exist"), $to), 1441401);
+                throw new Xapp_Rpc_Request_Exception(xapp_sprintf(__("request variable scope: %s does not exist"), $to), 1441401);
         }
         return $this;
     }
@@ -801,7 +801,7 @@ abstract class Xapp_Rpc_Request
             {
                 return $u;
             }else{
-                throw new Xapp_Rpc_Request_Exception(xapp_sprintf(_("url: %s is not a valid url"), $url), 1442001);
+                throw new Xapp_Rpc_Request_Exception(xapp_sprintf(__("url: %s is not a valid url"), $url), 1442001);
             }
         }else{
             return $url;
@@ -859,7 +859,7 @@ abstract class Xapp_Rpc_Request
         {
             return $this->get($name);
         }else{
-            throw new Xapp_Rpc_Request_Exception(_("overloading properties only allowed for registered global variables"), 1442401);
+            throw new Xapp_Rpc_Request_Exception(__("overloading properties only allowed for registered global variables"), 1442401);
         }
     }
 
@@ -911,7 +911,7 @@ abstract class Xapp_Rpc_Request
         {
             if($this->has($name))
             {
-                throw new Xapp_Rpc_Request_Exception(_("overloading methods only allowed for registered global variables"), 1442701);
+                throw new Xapp_Rpc_Request_Exception(__("overloading methods only allowed for registered global variables"), 1442701);
             }else{
                 return $this->get($name);
             }

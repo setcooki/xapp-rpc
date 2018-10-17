@@ -484,7 +484,7 @@ abstract class Xapp_Rpc_Server extends Xapp_Rpc implements Xapp_Singleton_Interf
                 {
                     $v[0] = Xapp_Rpc_Smd::mapType($v[0]);
                 }else{
-                    throw new Xapp_Rpc_Server_Exception(xapp_sprintf(_("additional parameter: %s must have a valid data type value"), $k), 1420101);
+                    throw new Xapp_Rpc_Server_Exception(xapp_sprintf(__("additional parameter: %s must have a valid data type value"), $k), 1420101);
                 }
             }
             xapp_reset_option(self::ADDITIONAL_PARAMETERS, $params, $this);
@@ -542,12 +542,12 @@ abstract class Xapp_Rpc_Server extends Xapp_Rpc implements Xapp_Singleton_Interf
                 }
                 $this->_service = $service;
             }else{
-                throw new Xapp_Rpc_Server_Exception(_("service over get is not supported by this rpc server"), 1421801);
+                throw new Xapp_Rpc_Server_Exception(__("service over get is not supported by this rpc server"), 1421801);
             }
         }
         if(!xapp_get_option(self::ALLOW_BATCHED_REQUESTS, $this) && $this->request()->isPost() && !is_null($this->request()->getParam(0)))
         {
-            throw new Xapp_Rpc_Server_Exception(_("batched requests are not allowed"), 1421802);
+            throw new Xapp_Rpc_Server_Exception(__("batched requests are not allowed"), 1421802);
         }
         $this->preHandle();
         $this->init();
@@ -571,7 +571,7 @@ abstract class Xapp_Rpc_Server extends Xapp_Rpc implements Xapp_Singleton_Interf
         {
             return $class::instance($options);
         }else{
-            throw new Xapp_Rpc_Server_Exception(xapp_sprintf(_("rpc server class: %s not found"), $class), 1420201);
+            throw new Xapp_Rpc_Server_Exception(xapp_sprintf(__("rpc server class: %s not found"), $class), 1420201);
         }
     }
 
@@ -969,14 +969,14 @@ abstract class Xapp_Rpc_Server extends Xapp_Rpc implements Xapp_Singleton_Interf
                     }
                     catch(ReflectionException $e)
                     {
-                        throw new Xapp_Rpc_Server_Exception(xapp_sprintf(_("unable to initialize class due to reflection error: %d, %s"), $e->getCode(), $e->getMessage()), 1421103);
+                        throw new Xapp_Rpc_Server_Exception(xapp_sprintf(__("unable to initialize class due to reflection error: %d, %s"), $e->getCode(), $e->getMessage()), 1421103);
                     }
                 }else{
                     $key = $call[1];
                     $callable = $call[1];
                 }
             }else{
-                throw new Xapp_Rpc_Server_Exception(_("invalid callable passed to invoke method"), 1421106);
+                throw new Xapp_Rpc_Server_Exception(__("invalid callable passed to invoke method"), 1421106);
             }
             if(is_callable($callable))
             {
@@ -1064,7 +1064,7 @@ abstract class Xapp_Rpc_Server extends Xapp_Rpc implements Xapp_Singleton_Interf
                 $hash = null;
                 return $result;
             }else{
-                throw new Xapp_Rpc_Server_Exception(_("unable to invoke function since first argument is not a callable"), 1421102);
+                throw new Xapp_Rpc_Server_Exception(__("unable to invoke function since first argument is not a callable"), 1421102);
             }
         }
         catch(Exception $e)

@@ -170,7 +170,7 @@ abstract class Xapp_Rpc_Response
         {
             return new $class($options);
         }else{
-            throw new Xapp_Rpc_Response_Exception(xapp_sprintf(_("rpc response class: %s does not exist"), $class), 1450201);
+            throw new Xapp_Rpc_Response_Exception(xapp_sprintf(__("rpc response class: %s does not exist"), $class), 1450201);
         }
     }
 
@@ -266,7 +266,7 @@ abstract class Xapp_Rpc_Response
                 {
                     $mixed = array(array(trim($mixed[0]), trim($mixed[1])));
                 }else{
-                    throw new Xapp_Rpc_Response_Exception(_("response raw header passed is not valid"), 1450501);
+                    throw new Xapp_Rpc_Response_Exception(__("response raw header passed is not valid"), 1450501);
                 }
             //header with key => value pair in first and second parameter
             }else if(is_string($mixed) && !is_array($value)){
@@ -276,7 +276,7 @@ abstract class Xapp_Rpc_Response
                 $mixed = array($mixed, $value);
             //header not recognized
             }else{
-                throw new Xapp_Rpc_Response_Exception(_("response header passed is not recognized"), 1450502);
+                throw new Xapp_Rpc_Response_Exception(__("response header passed is not recognized"), 1450502);
             }
             for($i = 0; $i < sizeof($mixed); $i++)
             {
@@ -310,7 +310,7 @@ abstract class Xapp_Rpc_Response
                     }
                     $this->_header[] = $obj;
                 }else{
-                    throw new Xapp_Rpc_Response_Exception(_("response header miss match when passing keys and values as arrays"), 1450503);
+                    throw new Xapp_Rpc_Response_Exception(__("response header miss match when passing keys and values as arrays"), 1450503);
                 }
             }
         }else{
@@ -480,7 +480,7 @@ abstract class Xapp_Rpc_Response
         {
             return $this->get($name);
         }else{
-            throw new Xapp_Rpc_Response_Exception(_("overloading property only allowed for data parameters"), 1451301);
+            throw new Xapp_Rpc_Response_Exception(__("overloading property only allowed for data parameters"), 1451301);
         }
     }
 
@@ -513,7 +513,7 @@ abstract class Xapp_Rpc_Response
         {
             xapp_array_unset($this->_data, $name);
         }else{
-            throw new Xapp_Rpc_Response_Exception(_("overloading and unsetting property only allowed for data parameters"), 1451501);
+            throw new Xapp_Rpc_Response_Exception(__("overloading and unsetting property only allowed for data parameters"), 1451501);
         }
     }
 
@@ -534,7 +534,7 @@ abstract class Xapp_Rpc_Response
         {
             return $this->get($name);
         }else{
-            throw new Xapp_Rpc_Response_Exception(_("overloading method only allowed to get values from data array"), 1451601);
+            throw new Xapp_Rpc_Response_Exception(__("overloading method only allowed to get values from data array"), 1451601);
         }
     }
 

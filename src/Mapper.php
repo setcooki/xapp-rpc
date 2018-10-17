@@ -42,7 +42,7 @@ class Xapp_Rpc_Mapper extends Xapp_Util_Json_Mapper
             {
                 if(($map = file_get_contents($file = $map)) === false)
                 {
-                    throw new Xapp_Rpc_Exception(xapp_sprintf(_("unable to load mapping object from file: %s"), $file), 1740102);
+                    throw new Xapp_Rpc_Exception(xapp_sprintf(__("unable to load mapping object from file: %s"), $file), 1740102);
                 }
             }
             if(Xapp_Util_Json::isJson($map))
@@ -55,7 +55,7 @@ class Xapp_Rpc_Mapper extends Xapp_Util_Json_Mapper
         }else if(is_array($map)){
             $this->_maps[$name] = xapp_array_to_object($map);
         }else{
-            throw new Xapp_Rpc_Exception(_("passed map is not a mappable value"), 1740101);
+            throw new Xapp_Rpc_Exception(__("passed map is not a mappable value"), 1740101);
         }
         return $this;
     }
@@ -114,7 +114,7 @@ class Xapp_Rpc_Mapper extends Xapp_Util_Json_Mapper
                     }
                 }
             }else{
-                throw new Xapp_Rpc_Exception(xapp_sprintf(_("passed dir: %s is not a readable directory"), $d), 1740201);
+                throw new Xapp_Rpc_Exception(xapp_sprintf(__("passed dir: %s is not a readable directory"), $d), 1740201);
             }
         }
         return $this;

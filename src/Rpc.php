@@ -57,7 +57,7 @@ abstract class Xapp_Rpc
                     {
                         self::$_instances[$driver] = new $class($options);
                     }else{
-                        throw new Xapp_Rpc_Exception(xapp_sprintf(_("rpc server class: %s does not exist"), $class), 1390101);
+                        throw new Xapp_Rpc_Exception(xapp_sprintf(__("rpc server class: %s does not exist"), $class), 1390101);
                     }
                 }
                 return self::$_instances[$driver];

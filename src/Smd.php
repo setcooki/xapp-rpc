@@ -213,7 +213,7 @@ abstract class Xapp_Rpc_Smd implements Xapp_Singleton_Interface
         {
             return $class::instance($options);
         }else{
-            throw new Xapp_Rpc_Smd_Exception(xapp_sprintf(_("rpc smd class: %s not found"), $class), 1410101);
+            throw new Xapp_Rpc_Smd_Exception(xapp_sprintf(__("rpc smd class: %s not found"), $class), 1410101);
         }
     }
 
@@ -447,7 +447,7 @@ abstract class Xapp_Rpc_Smd implements Xapp_Singleton_Interface
             $function = new ReflectionFunction($function);
             if($function->isInternal())
             {
-                throw new Xapp_Rpc_Smd_Exception(xapp_sprintf(_("function: %s can not be mapped since it is internal"), $function), 1410502);
+                throw new Xapp_Rpc_Smd_Exception(xapp_sprintf(__("function: %s can not be mapped since it is internal"), $function), 1410502);
             }
             $obj->transport = null;
             $obj->target = null;
@@ -480,7 +480,7 @@ abstract class Xapp_Rpc_Smd implements Xapp_Singleton_Interface
         }
         catch(ReflectionException $e)
         {
-            throw new Xapp_Rpc_Smd_Exception(xapp_sprintf(_("unable to map function: %s due to reflection error: %d, %s"), $function, $e->getCode(), $e->getMessage()), 1410501);
+            throw new Xapp_Rpc_Smd_Exception(xapp_sprintf(__("unable to map function: %s due to reflection error: %d, %s"), $function, $e->getCode(), $e->getMessage()), 1410501);
         }
     }
 
@@ -613,7 +613,7 @@ abstract class Xapp_Rpc_Smd implements Xapp_Singleton_Interface
         }
         catch(ReflectionException $e)
         {
-            throw new Xapp_Rpc_Smd_Exception(xapp_sprintf(_("unable to map class: %s due to reflection error: %d, %s"), $_class, $e->getCode(), $e->getMessage()), 1410601);
+            throw new Xapp_Rpc_Smd_Exception(xapp_sprintf(__("unable to map class: %s due to reflection error: %d, %s"), $_class, $e->getCode(), $e->getMessage()), 1410601);
         }
     }
 
@@ -801,7 +801,7 @@ abstract class Xapp_Rpc_Smd implements Xapp_Singleton_Interface
                 }
             }
         }else{
-            throw new Xapp_Rpc_Smd_Exception(xapp_sprintf(_("class dir: %s is not found"), $dir), 1411001);
+            throw new Xapp_Rpc_Smd_Exception(xapp_sprintf(__("class dir: %s is not found"), $dir), 1411001);
         }
         return $tmp;
     }
@@ -863,7 +863,7 @@ abstract class Xapp_Rpc_Smd implements Xapp_Singleton_Interface
                 $tmp[] = $name;
             }
         }else{
-            throw new Xapp_Rpc_Smd_Exception(xapp_sprintf(_("unable to open: %s"), $class), 1411101);
+            throw new Xapp_Rpc_Smd_Exception(xapp_sprintf(__("unable to open: %s"), $class), 1411101);
         }
     }
 
@@ -961,7 +961,7 @@ abstract class Xapp_Rpc_Smd implements Xapp_Singleton_Interface
                     $path = preg_replace('/\/+/', '/', $path);
                     $path = trim($path);
                 }else{
-                    throw new Xapp_Rpc_Smd_Exception(xapp_sprintf(_("smd rewrite rule: %s is not a valid url or url path value"), $_url), 1411301);
+                    throw new Xapp_Rpc_Smd_Exception(xapp_sprintf(__("smd rewrite rule: %s is not a valid url or url path value"), $_url), 1411301);
                 }
             }else{
                 $path = $path . "?service=$service";
